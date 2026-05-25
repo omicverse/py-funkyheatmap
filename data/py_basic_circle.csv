@@ -1,0 +1,9 @@
+row_id,column_id,color_value,size_value,label_value,geom,column_color,column_size,palette,width,overlay,legend,draw_outline,xsep,xwidth,xmax,xmin,x,label,scale,ysep,y,ymin,ymax,x0,y0,r,colour
+m0,metric_c,0.366209,0.366209,0.497699,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-1.1,-1.6,-0.6,8.9,-1.1,0.183105,#2C7CBB
+m1,metric_c,0.648243,0.648243,0.717619,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-2.2,-2.7,-1.7,8.9,-2.2,0.324121,#96C6DF
+m2,metric_c,1.0,1.0,0.991906,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-3.3,-3.8,-2.8,8.9,-3.3,0.5,#F7FBFF
+m3,metric_c,0.215312,0.215312,0.380035,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-4.4,-4.9,-3.9,8.9,-4.4,0.107656,#08509B
+m4,metric_c,0.724967,0.724967,0.777445,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-5.5,-6.0,-5.0,8.9,-5.5,0.362483,#B1D2E8
+m5,metric_c,0.926643,0.926643,0.934705,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-6.6,-7.1,-6.1,8.9,-6.6,0.463322,#E7F1FA
+m6,metric_c,0.0,0.0,0.212143,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-7.7,-8.2,-7.2,8.9,-7.7,0.0,#011636
+m7,metric_c,0.563672,0.563672,0.651674,circle,metric_c,metric_c,numerical_palette,1.0,False,True,True,0.1,1.0,9.4,8.4,8.9,,True,0.1,-8.8,-9.3,-8.3,8.9,-8.8,0.281836,#6DAFD6

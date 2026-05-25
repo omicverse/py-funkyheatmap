@@ -260,6 +260,8 @@ def calculate_geom_positions(
     col_bigspace = position_args["col_bigspace"]
     col_annot_offset = position_args["col_annot_offset"]
     col_annot_angle = position_args["col_annot_angle"]
+    col_annot_size = position_args.get("col_annot_size", 4.0)
+    cell_text_size = position_args.get("cell_text_size", 4.0)
 
     # row annotation flag
     if "group" not in row_info.columns or row_info["group"].map(_is_na).all():
@@ -608,6 +610,7 @@ def calculate_geom_positions(
                 "angle": col_annot_angle,
                 "vjust": 0,
                 "hjust": 0,
+                "size": col_annot_size,
                 "label_value": cn["name"].astype(str),
             }
         )
