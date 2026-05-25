@@ -41,4 +41,4 @@ __all__ = [
     "verify_row_info",
 ]
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
