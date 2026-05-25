@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyfunkyheatmap"
+version = "0.1.0"
+description = "Pure-Python port of the R funkyheatmap package — generate publication-ready dataframe heatmaps with funky rectangles, pies, bars and more."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "omicverse-rebuildr", email = "noreply@example.com"},
+]
+keywords = ["heatmap", "visualization", "benchmark", "funkyheatmap"]
+dependencies = [
+    "numpy>=1.22",
+    "pandas>=1.5",
+    "matplotlib>=3.6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "jupyter", "nbformat", "nbclient"]
+
+[project.urls]
+Homepage = "https://github.com/omicverse/py-funkyheatmap"
+"R reference" = "https://funkyheatmap.github.io/funkyheatmap/"
+
+[tool.setuptools.packages.find]
+include = ["pyfunkyheatmap*"]
