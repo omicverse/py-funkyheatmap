@@ -25,6 +25,8 @@ class PositionArguments:
     col_annot_angle: float = 30.0
     col_annot_size: float = 4.0     # column-header font size (ggplot units; × 2.4 → pt)
     cell_text_size: float = 4.0     # default font size for cell-level text (overlay labels etc.)
+    col_annot_use_adjust_text: bool = False   # nudge column-header labels apart via adjustText
+    col_annot_adjust_text_kwargs: Any = None  # forwarded to adjustText.adjust_text
     expand_xmin: float = 0.0
     expand_xmax: float = 2.0
     expand_ymin: float = 0.0

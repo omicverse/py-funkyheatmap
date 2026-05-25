@@ -374,6 +374,7 @@ def compose_figure(
 
     # ---- text -------------------------------------------------------------
     td = geom_positions["text_data"]
+    col_header_text_objs = []      # for optional adjustText nudging
     if isinstance(td, pd.DataFrame) and not td.empty:
         for _, t in td.iterrows():
             label = t.get("label_value", "")
@@ -411,7 +412,7 @@ def compose_figure(
             )
             x = (1 - alphax) * xmin + alphax * xmax
             y = (1 - alphay) * ymin + alphay * ymax
-            ax.text(
+            txt = ax.text(
                 x,
                 y,
                 str(label),
@@ -423,6 +424,31 @@ def compose_figure(
                 fontweight=weight,
                 fontstyle=style,
                 zorder=5,
+            )
+            # Collect rotated text objects (= column headers) for optional adjustText
+            if abs(angle) > 1e-6:
+                col_header_text_objs.append(txt)
+
+    # ---- optional: adjustText on column headers -----------------------------
+    use_adjust = bool(position_args.get("col_annot_use_adjust_text", False))
+    if use_adjust and col_header_text_objs:
+        try:
+            from adjustText import adjust_text
+        except ImportError:
+            import warnings
+            warnings.warn(
+                "col_annot_use_adjust_text=True but `adjustText` is not "
+                "installed. `pip install adjustText` to enable. "
+                "Falling back to un-adjusted headers."
+            )
+        else:
+            kwargs = position_args.get("col_annot_adjust_text_kwargs") or {}
+            adjust_text(
+                col_header_text_objs,
+                ax=ax,
+                only_move={"text": "x", "static": "x"},   # slide horizontally only
+                arrowprops=kwargs.pop("arrowprops", None),
+                **kwargs,
             )
 
     if legends:
