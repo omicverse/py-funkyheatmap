@@ -428,13 +428,14 @@ def compose_figure(
     if legends:
         from .legends import compose_legend_strip
         # legend strip lives entirely within the bottom ``legend_h`` inches.
-        # Use the actual figure height (which may have been expanded by
-        # subplots/aspect adjustments) so the strip fraction is consistent
-        # with the main-axes fraction.
+        # `top_anchor` is the *figure-y of the strip's top edge*. We use
+        # almost the full reserved band so the legend has enough height
+        # to render large enough cells. The main axes was anchored above
+        # `legend_h + gap` so there's no overlap.
         actual_fig_h = fig.get_figheight()
         legend_frac = legend_h / actual_fig_h
         compose_legend_strip(fig, legends, palettes or {},
-                             top_anchor=legend_frac * 0.85)
+                             top_anchor=legend_frac)
 
     return FunkyHeatmap(
         geom_positions=geom_positions,
