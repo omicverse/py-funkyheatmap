@@ -262,6 +262,7 @@ def calculate_geom_positions(
     col_annot_angle = position_args["col_annot_angle"]
     col_annot_size = position_args.get("col_annot_size", 4.0)
     cell_text_size = position_args.get("cell_text_size", 4.0)
+    col_annot_stagger_h = float(position_args.get("col_annot_stagger_h", 0.0) or 0.0)
 
     # row annotation flag
     if "group" not in row_info.columns or row_info["group"].map(_is_na).all():
@@ -507,7 +508,9 @@ def calculate_geom_positions(
             "levelmatch", ascending=False
         )
         level_heights["ysep"] = row_space
-        level_heights["ymax"] = col_annot_offset + np.cumsum(level_heights["height"] + level_heights["ysep"]) - level_heights["ysep"]
+        # When labels are staggered, the banner needs to clear the highest label row
+        banner_base = col_annot_offset + col_annot_stagger_h
+        level_heights["ymax"] = banner_base + np.cumsum(level_heights["height"] + level_heights["ysep"]) - level_heights["ysep"]
         level_heights["ymin"] = level_heights["ymax"] - level_heights["height"]
         level_heights["y"] = (level_heights["ymin"] + level_heights["ymax"]) / 2
 

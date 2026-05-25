@@ -429,6 +429,31 @@ def compose_figure(
             if abs(angle) > 1e-6:
                 col_header_text_objs.append(txt)
 
+    # ---- optional: deterministic 2-row stagger on rotated column headers ----
+    stagger_h = float(position_args.get("col_annot_stagger_h", 0.0) or 0.0)
+    if stagger_h > 0 and col_header_text_objs:
+        # Sort by x and split into adjacency groups (separated by group gaps)
+        objs = sorted(col_header_text_objs, key=lambda t: t.get_position()[0])
+        xs = [t.get_position()[0] for t in objs]
+        if len(xs) >= 2:
+            gaps = [xs[i + 1] - xs[i] for i in range(len(xs) - 1)]
+            sorted_gaps = sorted(gaps)
+            med = sorted_gaps[len(sorted_gaps) // 2] or 1.0
+            thresh = 1.5 * med
+            groups = [[objs[0]]]
+            for i in range(1, len(objs)):
+                if xs[i] - xs[i - 1] > thresh:
+                    groups.append([objs[i]])
+                else:
+                    groups[-1].append(objs[i])
+        else:
+            groups = [objs]
+        # Alternate y-offset within each group
+        for g in groups:
+            for k, t in enumerate(g):
+                x, y = t.get_position()
+                t.set_position((x, y + (k % 2) * stagger_h))
+
     # ---- optional: adjustText on column headers -----------------------------
     use_adjust = bool(position_args.get("col_annot_use_adjust_text", False))
     if use_adjust and col_header_text_objs:
