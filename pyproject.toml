@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyfunkyheatmap"
-version = "0.1.1"
+version = "0.1.2"
 description = "Pure-Python port of the R funkyheatmap package — generate publication-ready dataframe heatmaps with funky rectangles, pies, bars and more."
 readme = "README.md"
 license = {text = "MIT"}

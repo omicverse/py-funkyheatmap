@@ -70,22 +70,40 @@ def _sample_palette(pal: list[str], n: int) -> list[str]:
 # rounded rect path (mirror score_to_funky_rectangle)
 # ---------------------------------------------------------------------------
 
-def _rounded_rect_patch(xmin, xmax, ymin, ymax, radius, **kwargs):
+def _rounded_rect_patch(xmin, xmax, ymin, ymax, radius,
+                        rx=None, ry=None, **kwargs):
+    """Closed rounded-rect path.
+
+    By default the corner is a circular arc with ``radius`` in data
+    coords (clamped to half the smaller side). When the axes' physical x
+    and y aspect differ, pass ``rx``/``ry`` explicitly so the rendered
+    corner is a circle in *physical* units (not a stretched ellipse).
+    Pass ``rx`` = ``physical_corner_inches / ax_w_in`` and ``ry`` =
+    ``physical_corner_inches / ax_h_in`` for that effect.
+    """
     w = xmax - xmin
     h = ymax - ymin
-    r = max(0.0, min(radius, w / 2, h / 2))
-    if r == 0:
+    if rx is None and ry is None:
+        r = max(0.0, min(radius, w / 2, h / 2))
+        rx = ry = r
+    else:
+        rx = max(0.0, min(rx if rx is not None else radius, w / 2))
+        ry = max(0.0, min(ry if ry is not None else radius, h / 2))
+    if rx == 0 and ry == 0:
         verts = [(xmin, ymin), (xmax, ymin), (xmax, ymax),
                  (xmin, ymax), (xmin, ymin)]
         codes = [mpath.Path.MOVETO] + [mpath.Path.LINETO] * 4
         return mpatches.PathPatch(mpath.Path(verts, codes), **kwargs)
-    k = r * (1 - 0.5522847498)
+    # cubic Bezier offsets for quarter-circle / quarter-ellipse corners
+    BEZ = 0.5522847498
+    kx = rx * (1 - BEZ)
+    ky = ry * (1 - BEZ)
     verts = [
-        (xmin + r, ymin),
-        (xmax - r, ymin), (xmax - k, ymin), (xmax, ymin + k), (xmax, ymin + r),
-        (xmax, ymax - r), (xmax, ymax - k), (xmax - k, ymax), (xmax - r, ymax),
-        (xmin + r, ymax), (xmin + k, ymax), (xmin, ymax - k), (xmin, ymax - r),
-        (xmin, ymin + r), (xmin, ymin + k), (xmin + k, ymin), (xmin + r, ymin),
+        (xmin + rx, ymin),
+        (xmax - rx, ymin), (xmax - kx, ymin), (xmax, ymin + ky), (xmax, ymin + ry),
+        (xmax, ymax - ry), (xmax, ymax - ky), (xmax - kx, ymax), (xmax - rx, ymax),
+        (xmin + rx, ymax), (xmin + kx, ymax), (xmin, ymax - ky), (xmin, ymax - ry),
+        (xmin, ymin + ry), (xmin, ymin + ky), (xmin + kx, ymin), (xmin + rx, ymin),
     ]
     codes = (
         [mpath.Path.MOVETO]
@@ -288,16 +306,23 @@ def _draw_sized_stops_legend(ax: Axes, legend: dict, palettes,
                 ((x0 + x1) / 2, centre_y), wx, wy,
                 facecolor=col, edgecolor="black", linewidth=0.4))
         elif geom == "funkyrect":
-            # R's score_to_funky_rectangle: for sv >= 0.8 full cell with
-            # small corner; for sv < 0.8 shrunken cell with corner 0.5*side.
+            # R's score_to_funky_rectangle:
+            #   sv >= 0.8: full cell, corner = (0.9 - 0.8*trans) * min_side
+            #   sv <  0.8: cell shrunk to (sv/0.8 * 0.9 + 0.1) of full,
+            #              corner = 0.5 (data units, clamped to side/2).
+            #
+            # We render the corner as a PHYSICAL circle (not an axes-frac
+            # ellipse) by passing separate rx/ry — rx in axes-x and ry in
+            # axes-y that correspond to the same physical inches.
             midpoint = 0.8
             if sv >= midpoint:
                 trans = (sv - midpoint) / (1 - midpoint) / 2 + 0.5
                 cwx, cwy = wx, wy
                 cx0, cx1, cy0, cy1 = x0, x1, y0, y1
-                corner_data = (0.9 - 0.8 * trans) * min(cwx, cwy)
+                # corner radius in physical inches: side_in * (0.9 - 0.8*trans)
+                cell_side_in = sv * unit_in
+                corner_in = (0.9 - 0.8 * trans) * cell_side_in
             else:
-                # shrink to (trans*0.9 + 0.1) of full
                 if sv > 0:
                     trans = sv / midpoint
                     scale = trans * 0.9 + 0.1
@@ -311,9 +336,18 @@ def _draw_sized_stops_legend(ax: Axes, legend: dict, palettes,
                 cx1 = mx + cwx / 2
                 cy0 = my - cwy / 2
                 cy1 = my + cwy / 2
-                corner_data = 0.5 * min(cwx, cwy)
+                # in R the corner stays at 0.5 data units (clamped to
+                # side/2 by roundrectGrob) → a CIRCLE inscribed in the
+                # shrunken cell. Mirror that:
+                shrunk_side_in = sv * unit_in * scale
+                corner_in = shrunk_side_in / 2
+            # convert physical corner inches → axes fractions separately
+            # for x and y so the curve is a physical circle, not an ellipse.
+            rx_axes = corner_in / ax_w_in if ax_w_in > 0 else 0
+            ry_axes = corner_in / ax_h_in if ax_h_in > 0 else 0
             ax.add_patch(_rounded_rect_patch(
-                cx0, cx1, cy0, cy1, corner_data,
+                cx0, cx1, cy0, cy1, 0,
+                rx=rx_axes, ry=ry_axes,
                 facecolor=col, edgecolor="black", linewidth=0.4))
         else:  # rect
             ax.add_patch(mpatches.Rectangle(
