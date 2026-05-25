@@ -442,12 +442,13 @@ def compose_figure(
                 "Falling back to un-adjusted headers."
             )
         else:
-            kwargs = position_args.get("col_annot_adjust_text_kwargs") or {}
+            kwargs = dict(position_args.get("col_annot_adjust_text_kwargs") or {})
+            kwargs.setdefault("only_move", {"text": "x", "static": "x"})
+            arrowprops = kwargs.pop("arrowprops", None)
             adjust_text(
                 col_header_text_objs,
                 ax=ax,
-                only_move={"text": "x", "static": "x"},   # slide horizontally only
-                arrowprops=kwargs.pop("arrowprops", None),
+                arrowprops=arrowprops,
                 **kwargs,
             )
 
