@@ -631,6 +631,14 @@ def calculate_geom_positions(
             full["color_value"] = 1
             circle_data = pd.concat([circle_data, full], ignore_index=True)
 
+    # Apply cell_text_size as the default for any text_data row that doesn't
+    # have its own size set (column headers already have size=col_annot_size).
+    if text_data is not None and len(text_data) > 0:
+        if "size" not in text_data.columns:
+            text_data["size"] = float(cell_text_size)
+        else:
+            text_data["size"] = text_data["size"].fillna(float(cell_text_size))
+
     return {
         "row_pos": row_pos,
         "column_pos": column_pos,
